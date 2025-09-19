@@ -1,0 +1,11 @@
+{% extends 'school/base.html' %}
+
+{% block content %}
+<div class="jumbotron">
+    <h1 class="display-4">Добро пожаловать в Language School!</h1>
+    <p class="lead">Изучайте иностранные языки с лучшими преподавателями</p>
+    <hr class="my-4">
+    <p>Выберите подходящий курс и начните обучение уже сегодня</p>
+    <a class="btn btn-primary btn-lg" href="{% url 'course_list' %}" role="button">Посмотреть курсы</a>
+</div>
+{% endblock %}
