@@ -1,11 +1,39 @@
 {% extends 'school/base.html' %}
 
 {% block content %}
-<div class="jumbotron">
+<div class="jumbotron bg-light p-5 rounded">
     <h1 class="display-4">Добро пожаловать в Language School!</h1>
     <p class="lead">Изучайте иностранные языки с лучшими преподавателями</p>
     <hr class="my-4">
-    <p>Выберите подходящий курс и начните обучение уже сегодня</p>
+    <p>Наша школа предлагает качественное обучение английскому, немецкому, французскому и другим языкам. Индивидуальный подход к каждому студенту и современные методики обучения.</p>
     <a class="btn btn-primary btn-lg" href="{% url 'course_list' %}" role="button">Посмотреть курсы</a>
+    <a class="btn btn-outline-secondary btn-lg ms-2" href="{% url 'teacher_list' %}" role="button">Наши преподаватели</a>
+</div>
+
+<div class="row mt-5">
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-body text-center">
+                <h5 class="card-title">Качественное обучение</h5>
+                <p class="card-text">Современные методики и индивидуальный подход</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-body text-center">
+                <h5 class="card-title">Опытные преподаватели</h5>
+                <p class="card-text">Профессионалы с международными сертификатами</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-body text-center">
+                <h5 class="card-title">Удобный формат</h5>
+                <p class="card-text">Онлайн и оффлайн занятия, гибкое расписание</p>
+            </div>
+        </div>
+    </div>
 </div>
 {% endblock %}

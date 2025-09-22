@@ -1,0 +1,61 @@
+{% extends 'school/base.html' %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8">
+        <h1>{{ course.title }}</h1>
+
+        <div class="mb-3">
+            <span class="badge bg-primary">{{ course.language.name }}</span>
+            <span class="badge bg-secondary ms-1">{{ course.level.name }}</span>
+        </div>
+
+        <div class="card mb-4">
+            <div class="card-body">
+                <h3>Описание курса</h3>
+                <p>{{ course.description }}</p>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <p><strong>Продолжительность:</strong> {{ course.duration }}</p>
+                        <p><strong>Цена:</strong> {{ course.price }} руб.</p>
+                    </div>
+                    <div class="col-md-6">
+                        <p><strong>Язык:</strong> {{ course.language.name }}</p>
+                        <p><strong>Уровень:</strong> {{ course.level.name }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card mb-4">
+            <div class="card-body">
+                <h3>Преподаватель</h3>
+                <div class="d-flex align-items-center">
+                    {% if course.teacher.photo %}
+                    <img src="{{ course.teacher.photo.url }}" alt="{{ course.teacher.user.get_full_name }}"
+                         class="rounded-circle me-3" width="80" height="80">
+                    {% endif %}
+                    <div>
+                        <h5>{{ course.teacher.user.get_full_name }}</h5>
+                        <p class="text-muted">{{ course.teacher.bio|truncatewords:30 }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {% if user.is_authenticated %}
+            <form method="post" action="{% url 'enroll_course' course.id %}">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-success btn-lg">Записаться на курс</button>
+            </form>
+        {% else %}
+            <div class="alert alert-info">
+                Для записи на курс необходимо
+                <a href="{% url 'login' %}" class="alert-link">войти</a> или
+                <a href="{% url 'register' %}" class="alert-link">зарегистрироваться</a>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

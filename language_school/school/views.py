@@ -4,7 +4,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib import messages
 from .models import Course, Teacher, Enrollment, CourseMaterial
-
+from django.contrib.auth import logout
 
 def home(request):
     return render(request, 'school/home.html')
@@ -66,3 +66,7 @@ def profile(request):
         'course_materials': course_materials,
     }
     return render(request, 'school/profile.html', context)
+
+def custom_logout(request):
+    logout(request)
+    return redirect('home')

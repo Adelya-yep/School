@@ -1,0 +1,89 @@
+{% extends 'school/base.html' %}
+
+{% block content %}
+<h1 class="mb-4">Личный кабинет</h1>
+
+<div class="row">
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Информация о пользователе</h5>
+                <p><strong>Имя пользователя:</strong> {{ user.username }}</p>
+                <p><strong>Имя:</strong> {{ user.first_name }}</p>
+                <p><strong>Фамилия:</strong> {{ user.last_name }}</p>
+                <p><strong>Email:</strong> {{ user.email }}</p>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-8">
+        <div class="card mb-4">
+            <div class="card-body">
+                <h5 class="card-title">Мои заявки</h5>
+                {% if enrollments %}
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Курс</th>
+                                <th>Дата подачи</th>
+                                <th>Статус</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for enrollment in enrollments %}
+                            <tr>
+                                <td>{{ enrollment.course.title }}</td>
+                                <td>{{ enrollment.application_date|date:"d.m.Y H:i" }}</td>
+                                <td>
+                                    <span class="badge bg-{% if enrollment.status == 'approved' %}success{% elif enrollment.status == 'rejected' %}danger{% else %}warning{% endif %}">
+                                        {{ enrollment.get_status_display }}
+                                    </span>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <p class="text-muted">У вас нет активных заявок</p>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Мои курсы</h5>
+                {% if approved_courses %}
+                    {% for enrollment in approved_courses %}
+                    <div class="card mb-3">
+                        <div class="card-header">
+                            <h6 class="mb-0">{{ enrollment.course.title }}</h6>
+                        </div>
+                        <div class="card-body">
+                            <h6>Материалы курса:</h6>
+                            {% if course_materials.enrollment.course.id %}
+                                <ul class="list-group list-group-flush">
+                                    {% for material in course_materials.enrollment.course.id %}
+                                    <li class="list-group-item">
+                                        <a href="{{ material.file.url }}" target="_blank" class="text-decoration-none">
+                                            📄 {{ material.title }}
+                                        </a>
+                                        <small class="text-muted">({{ material.uploaded_at|date:"d.m.Y" }})</small>
+                                    </li>
+                                    {% endfor %}
+                                </ul>
+                            {% else %}
+                                <p class="text-muted">Материалы пока не добавлены</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <p class="text-muted">У вас нет подтвержденных курсов</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
