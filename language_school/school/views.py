@@ -5,6 +5,7 @@ from django.contrib.auth.forms import UserCreationForm
 from django.contrib import messages
 from .models import Course, Teacher, Enrollment, CourseMaterial
 from django.contrib.auth import logout
+from .forms import UserEditForm
 
 def home(request):
     return render(request, 'school/home.html')
@@ -52,8 +53,19 @@ def register(request):
 
 @login_required
 def profile(request):
+    if request.method == 'POST':
+        form = UserEditForm(request.POST, instance=request.user)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Профиль успешно обновлен!')
+            return redirect('profile')
+    else:
+        form = UserEditForm(instance=request.user)
+
     enrollments = Enrollment.objects.filter(student=request.user)
     approved_courses = enrollments.filter(status='approved')
+    pending_enrollments = enrollments.filter(status='pending')
+    rejected_enrollments = enrollments.filter(status='rejected')
 
     course_materials = {}
     for enrollment in approved_courses:
@@ -61,8 +73,11 @@ def profile(request):
         course_materials[enrollment.course.id] = materials
 
     context = {
+        'form': form,
         'enrollments': enrollments,
         'approved_courses': approved_courses,
+        'pending_enrollments': pending_enrollments,
+        'rejected_enrollments': rejected_enrollments,
         'course_materials': course_materials,
     }
     return render(request, 'school/profile.html', context)

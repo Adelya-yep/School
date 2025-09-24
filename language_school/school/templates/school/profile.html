@@ -7,15 +7,57 @@
     <div class="col-md-4">
         <div class="card">
             <div class="card-body">
-                <h5 class="card-title">Информация о пользователе</h5>
-                <p><strong>Имя пользователя:</strong> {{ user.username }}</p>
-                <p><strong>Имя:</strong> {{ user.first_name }}</p>
-                <p><strong>Фамилия:</strong> {{ user.last_name }}</p>
-                <p><strong>Email:</strong> {{ user.email }}</p>
+                <h5 class="card-title">Редактирование профиля</h5>
+
+                <form method="post">
+                    {% csrf_token %}
+
+                    <div class="mb-3">
+                        <label for="id_username" class="form-label">Имя пользователя</label>
+                        <input type="text" class="form-control" value="{{ user.username }}" disabled>
+                        <small class="text-muted">Имя пользователя нельзя изменить</small>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="id_first_name" class="form-label">Имя</label>
+                        {{ form.first_name }}
+                        {% if form.first_name.errors %}
+                        <div class="text-danger">{{ form.first_name.errors }}</div>
+                        {% endif %}
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="id_last_name" class="form-label">Фамилия</label>
+                        {{ form.last_name }}
+                        {% if form.last_name.errors %}
+                        <div class="text-danger">{{ form.last_name.errors }}</div>
+                        {% endif %}
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="id_email" class="form-label">Email</label>
+                        {{ form.email }}
+                        {% if form.email.errors %}
+                        <div class="text-danger">{{ form.email.errors }}</div>
+                        {% endif %}
+                    </div>
+
+                    <button type="submit" class="btn btn-primary w-100">Сохранить изменения</button>
+                </form>
+            </div>
+        </div>
+
+        <div class="card mt-3">
+            <div class="card-body">
+                <h6>Статистика</h6>
+                <p class="mb-1"><strong>Всего заявок:</strong> {{ enrollments.count }}</p>
+                <p class="mb-1"><strong>Подтвержденных курсов:</strong> {{ approved_courses.count }}</p>
+                <p class="mb-1"><strong>На рассмотрении:</strong> {{ pending_enrollments.count }}</p>
+                <p class="mb-0"><strong>Отклоненных:</strong> {{ rejected_enrollments.count }}</p>
             </div>
         </div>
     </div>
-    
+
     <div class="col-md-8">
         <div class="card mb-4">
             <div class="card-body">
@@ -33,7 +75,11 @@
                         <tbody>
                             {% for enrollment in enrollments %}
                             <tr>
-                                <td>{{ enrollment.course.title }}</td>
+                                <td>
+                                    <a href="{% url 'course_detail' enrollment.course.id %}" class="text-decoration-none">
+                                        {{ enrollment.course.title }}
+                                    </a>
+                                </td>
                                 <td>{{ enrollment.application_date|date:"d.m.Y H:i" }}</td>
                                 <td>
                                     <span class="badge bg-{% if enrollment.status == 'approved' %}success{% elif enrollment.status == 'rejected' %}danger{% else %}warning{% endif %}">
@@ -61,6 +107,10 @@
                             <h6 class="mb-0">{{ enrollment.course.title }}</h6>
                         </div>
                         <div class="card-body">
+                            <p><strong>Преподаватель:</strong> {{ enrollment.course.teacher.user.get_full_name }}</p>
+                            <p><strong>Язык:</strong> {{ enrollment.course.language.name }}</p>
+                            <p><strong>Уровень:</strong> {{ enrollment.course.level.name }}</p>
+
                             <h6>Материалы курса:</h6>
                             {% if course_materials.enrollment.course.id %}
                                 <ul class="list-group list-group-flush">
