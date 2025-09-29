@@ -1,39 +1,107 @@
 {% extends 'school/base.html' %}
 
 {% block content %}
-<div class="jumbotron bg-light p-5 rounded">
-    <h1 class="display-4">Добро пожаловать в Language School!</h1>
-    <p class="lead">Изучайте иностранные языки с лучшими преподавателями</p>
-    <hr class="my-4">
-    <p>Наша школа предлагает качественное обучение английскому, немецкому, французскому и другим языкам. Индивидуальный подход к каждому студенту и современные методики обучения.</p>
-    <a class="btn btn-primary btn-lg" href="{% url 'course_list' %}" role="button">Посмотреть курсы</a>
-    <a class="btn btn-outline-secondary btn-lg ms-2" href="{% url 'teacher_list' %}" role="button">Наши преподаватели</a>
-</div>
+<section class="hero-section text-center">
+    <div class="container">
+        <h1 class="display-4 fw-bold mb-4">Откройте мир языков с нами</h1>
+        <p class="lead mb-4">Профессиональное обучение иностранным языкам для любых целей</p>
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <a href="{% url 'course_list' %}" class="btn btn-light btn-lg w-100">
+                            <i class="bi bi-book me-2"></i>Начать обучение
+                        </a>
+                    </div>
+                    <div class="col-md-6">
+                        <a href="{% url 'teacher_list' %}" class="btn btn-outline-light btn-lg w-100">
+                            <i class="bi bi-people me-2"></i>Наши преподаватели
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
 
-<div class="row mt-5">
-    <div class="col-md-4">
-        <div class="card">
-            <div class="card-body text-center">
-                <h5 class="card-title">Качественное обучение</h5>
-                <p class="card-text">Современные методики и индивидуальный подход</p>
+<section class="container mb-5">
+    <div class="row g-4">
+        <div class="col-md-4">
+            <div class="card feature-card h-100 text-center">
+                <div class="card-body p-4">
+                    <div class="text-primary mb-3">
+                        <i class="bi bi-award" style="font-size: 3rem;"></i>
+                    </div>
+                    <h5 class="card-title">Качественное обучение</h5>
+                    <p class="card-text">Современные методики и индивидуальный подход к каждому студенту</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card feature-card h-100 text-center">
+                <div class="card-body p-4">
+                    <div class="text-success mb-3">
+                        <i class="bi bi-person-check" style="font-size: 3rem;"></i>
+                    </div>
+                    <h5 class="card-title">Опытные преподаватели</h5>
+                    <p class="card-text">Профессионалы с международными сертификатами и опытом работы</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card feature-card h-100 text-center">
+                <div class="card-body p-4">
+                    <div class="text-info mb-3">
+                        <i class="bi bi-laptop" style="font-size: 3rem;"></i>
+                    </div>
+                    <h5 class="card-title">Удобный формат</h5>
+                    <p class="card-text">Онлайн и оффлайн занятия, гибкое расписание под ваш график</p>
+                </div>
             </div>
         </div>
     </div>
-    <div class="col-md-4">
-        <div class="card">
-            <div class="card-body text-center">
-                <h5 class="card-title">Опытные преподаватели</h5>
-                <p class="card-text">Профессионалы с международными сертификатами</p>
-            </div>
+</section>
+
+<section class="container mb-5">
+    <div class="row align-items-center mb-4">
+        <div class="col">
+            <h2 class="fw-bold">Популярные курсы</h2>
+            <p class="text-muted">Выберите подходящий курс и начните обучение</p>
+        </div>
+        <div class="col-auto">
+            <a href="{% url 'course_list' %}" class="btn btn-primary">
+                Все курсы <i class="bi bi-arrow-right ms-1"></i>
+            </a>
         </div>
     </div>
-    <div class="col-md-4">
-        <div class="card">
-            <div class="card-body text-center">
-                <h5 class="card-title">Удобный формат</h5>
-                <p class="card-text">Онлайн и оффлайн занятия, гибкое расписание</p>
+
+    <div class="row g-4">
+        {% for course in courses|slice:":3" %}
+        <div class="col-md-4">
+            <div class="card course-card">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start mb-3">
+                        <span class="badge bg-primary">{{ course.language.name }}</span>
+                        <span class="badge bg-secondary">{{ course.level.name }}</span>
+                    </div>
+                    <h5 class="card-title">{{ course.title }}</h5>
+                    <p class="card-text text-muted">{{ course.description|truncatewords:20 }}</p>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <span class="h5 text-primary mb-0">{{ course.price }} ₽</span>
+                        <a href="{% url 'course_detail' course.pk %}" class="btn btn-outline-primary btn-sm">
+                            Подробнее
+                        </a>
+                    </div>
+                </div>
             </div>
         </div>
+        {% empty %}
+        <div class="col-12 text-center">
+            <div class="alert alert-info">
+                <i class="bi bi-info-circle me-2"></i>Курсы скоро появятся
+            </div>
+        </div>
+        {% endfor %}
     </div>
-</div>
+</section>
 {% endblock %}

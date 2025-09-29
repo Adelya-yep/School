@@ -1,46 +1,75 @@
 {% extends 'school/base.html' %}
 
 {% block content %}
-<h1 class="mb-4">Наши преподаватели</h1>
+<div class="container">
+    <!-- Заголовок с отступом -->
+    <div class="row mb-4 mt-4">
+        <div class="col">
+            <h1 class="fw-bold">
+                <i class="bi bi-people me-2"></i>Наши преподаватели
+            </h1>
+            <p class="text-muted">Профессиональная команда преподавателей с международным опытом</p>
+        </div>
+    </div>
 
-<div class="row">
-    {% for teacher in teachers %}
-    <div class="col-md-6 mb-4">
-        <div class="card h-100">
-            <div class="card-body">
-                <div class="d-flex align-items-center mb-3">
-                    {% if teacher.photo %}
-                    <img src="{{ teacher.photo.url }}" alt="{{ teacher.user.get_full_name }}" 
-                         class="rounded-circle me-3" width="80" height="80">
-                    {% else %}
-                    <div class="rounded-circle bg-secondary me-3 d-flex align-items-center justify-content-center" 
-                         style="width: 80px; height: 80px;">
-                        <span class="text-white">{{ teacher.user.first_name|first }}{{ teacher.user.last_name|first }}</span>
+    <!-- Список преподавателей -->
+    <div class="row g-4">
+        {% for teacher in teachers %}
+        <div class="col-lg-6">
+            <div class="card teacher-card h-100">
+                <div class="card-body">
+                    <div class="d-flex align-items-start">
+                        {% if teacher.photo %}
+                        <img src="{{ teacher.photo.url }}" alt="{{ teacher.user.get_full_name }}"
+                             class="rounded-circle me-4" width="80" height="80">
+                        {% else %}
+                        <div class="rounded-circle bg-secondary me-4 d-flex align-items-center justify-content-center"
+                             style="width: 80px; height: 80px;">
+                            <i class="bi bi-person text-white" style="font-size: 1.5rem;"></i>
+                        </div>
+                        {% endif %}
+                        <div class="flex-grow-1">
+                            <h5 class="card-title mb-2">{{ teacher.user.get_full_name }}</h5>
+                            <p class="text-muted mb-3">{{ teacher.bio|truncatewords:30 }}</p>
+
+                            <div class="mb-3">
+                                <strong class="d-block mb-2">
+                                    <i class="bi bi-translate me-1"></i>Преподаваемые языки:
+                                </strong>
+                                <div class="d-flex flex-wrap gap-2">
+                                    {% for language in teacher.languages.all %}
+                                    <span class="badge bg-primary">
+                                        <i class="bi bi-check-circle me-1"></i>{{ language.name }}
+                                    </span>
+                                    {% endfor %}
+                                </div>
+                            </div>
+
+                            <div class="d-flex justify-content-between align-items-center">
+                                <small class="text-muted">
+                                    <i class="bi bi-book me-1"></i>
+                                    Курсов: {{ teacher.course_set.count }}
+                                </small>
+                                <a href="{% url 'course_list' %}?teacher={{ teacher.id }}" class="btn btn-outline-primary btn-sm">
+                                    <i class="bi bi-eye me-1"></i>Курсы преподавателя
+                                </a>
+                            </div>
+                        </div>
                     </div>
-                    {% endif %}
-                    <div>
-                        <h5 class="card-title mb-0">{{ teacher.user.get_full_name }}</h5>
-                        <p class="text-muted">Преподаватель</p>
-                    </div>
-                </div>
-                
-                <p class="card-text">{{ teacher.bio|truncatewords:40 }}</p>
-                
-                <div class="mb-2">
-                    <strong>Языки:</strong>
-                    {% for language in teacher.languages.all %}
-                    <span class="badge bg-primary me-1">{{ language.name }}</span>
-                    {% endfor %}
                 </div>
             </div>
         </div>
-    </div>
-    {% empty %}
-    <div class="col-12">
-        <div class="alert alert-info">
-            Преподаватели пока не добавлены
+        {% empty %}
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body text-center py-5">
+                    <i class="bi bi-people text-muted" style="font-size: 3rem;"></i>
+                    <h4 class="text-muted mt-3">Преподаватели пока не добавлены</h4>
+                    <p class="text-muted">Скоро здесь появится информация о наших преподавателях</p>
+                </div>
+            </div>
         </div>
+        {% endfor %}
     </div>
-    {% endfor %}
 </div>
 {% endblock %}

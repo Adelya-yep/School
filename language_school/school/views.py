@@ -8,23 +8,30 @@ from django.contrib.auth import logout
 from .forms import UserEditForm
 
 def home(request):
-    return render(request, 'school/home.html')
-
+    courses = Course.objects.filter(is_active=True)[:3]
+    return render(request, 'school/home.html', {'courses': courses})
 
 def course_list(request):
     courses = Course.objects.filter(is_active=True)
     return render(request, 'school/course_list.html', {'courses': courses})
 
-
 def course_detail(request, pk):
     course = get_object_or_404(Course, pk=pk, is_active=True)
-    return render(request, 'school/course_detail.html', {'course': course})
+    user_enrollment = None
+    if request.user.is_authenticated:
+        user_enrollment = Enrollment.objects.filter(
+            student=request.user,
+            course=course
+        ).first()
 
+    return render(request, 'school/course_detail.html', {
+        'course': course,
+        'user_enrollment': user_enrollment
+    })
 
 def teacher_list(request):
     teachers = Teacher.objects.all()
     return render(request, 'school/teacher_list.html', {'teachers': teachers})
-
 
 @login_required
 def enroll_course(request, course_id):
@@ -38,7 +45,6 @@ def enroll_course(request, course_id):
     messages.success(request, 'Заявка успешно подана! Ожидайте подтверждения.')
     return redirect('profile')
 
-
 def register(request):
     if request.method == 'POST':
         form = UserCreationForm(request.POST)
@@ -49,7 +55,6 @@ def register(request):
     else:
         form = UserCreationForm()
     return render(request, 'school/register.html', {'form': form})
-
 
 @login_required
 def profile(request):

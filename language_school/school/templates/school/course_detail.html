@@ -1,61 +1,155 @@
 {% extends 'school/base.html' %}
 
 {% block content %}
-<div class="row">
-    <div class="col-md-8">
-        <h1>{{ course.title }}</h1>
+<div class="container">
+    <!-- Хлебные крошки -->
+    <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'home' %}" class="text-decoration-none">Главная</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'course_list' %}" class="text-decoration-none">Курсы</a></li>
+            <li class="breadcrumb-item active">{{ course.title }}</li>
+        </ol>
+    </nav>
 
-        <div class="mb-3">
-            <span class="badge bg-primary">{{ course.language.name }}</span>
-            <span class="badge bg-secondary ms-1">{{ course.level.name }}</span>
-        </div>
-
-        <div class="card mb-4">
-            <div class="card-body">
-                <h3>Описание курса</h3>
-                <p>{{ course.description }}</p>
-
-                <div class="row">
-                    <div class="col-md-6">
-                        <p><strong>Продолжительность:</strong> {{ course.duration }}</p>
-                        <p><strong>Цена:</strong> {{ course.price }} руб.</p>
+    <div class="row">
+        <!-- Основная информация -->
+        <div class="col-lg-8">
+            <div class="card mb-4">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start mb-3">
+                        <div>
+                            <span class="badge bg-primary">{{ course.language.name }}</span>
+                            <span class="badge bg-secondary ms-1">{{ course.level.name }}</span>
+                        </div>
+                        <h3 class="text-success mb-0">{{ course.price }} ₽</h3>
                     </div>
-                    <div class="col-md-6">
-                        <p><strong>Язык:</strong> {{ course.language.name }}</p>
-                        <p><strong>Уровень:</strong> {{ course.level.name }}</p>
+
+                    <h1 class="card-title h2 mb-3">{{ course.title }}</h1>
+
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <p class="mb-2">
+                                <i class="bi bi-clock me-2 text-primary"></i>
+                                <strong>Продолжительность:</strong> {{ course.duration }}
+                            </p>
+                            <p class="mb-2">
+                                <i class="bi bi-translate me-2 text-primary"></i>
+                                <strong>Язык:</strong> {{ course.language.name }}
+                            </p>
+                        </div>
+                        <div class="col-md-6">
+                            <p class="mb-2">
+                                <i class="bi bi-bar-chart me-2 text-primary"></i>
+                                <strong>Уровень:</strong> {{ course.level.name }}
+                            </p>
+                            <p class="mb-0">
+                                <i class="bi bi-calendar me-2 text-primary"></i>
+                                <strong>Добавлен:</strong> {{ course.created_at|date:"d.m.Y" }}
+                            </p>
+                        </div>
+                    </div>
+
+                    <h4 class="mb-3">
+                        <i class="bi bi-journal-text me-2"></i>Описание курса
+                    </h4>
+                    <p class="card-text lead">{{ course.description }}</p>
+                </div>
+            </div>
+
+            <!-- Преподаватель -->
+            <div class="card">
+                <div class="card-body">
+                    <h4 class="card-title mb-4">
+                        <i class="bi bi-person-badge me-2"></i>Преподаватель
+                    </h4>
+                    <div class="d-flex align-items-start">
+                        {% if course.teacher.photo %}
+                        <img src="{{ course.teacher.photo.url }}" alt="{{ course.teacher.user.get_full_name }}"
+                             class="rounded-circle me-4" width="100" height="100">
+                        {% else %}
+                        <div class="rounded-circle bg-secondary me-4 d-flex align-items-center justify-content-center"
+                             style="width: 100px; height: 100px;">
+                            <i class="bi bi-person text-white" style="font-size: 2rem;"></i>
+                        </div>
+                        {% endif %}
+                        <div class="flex-grow-1">
+                            <h5 class="mb-2">{{ course.teacher.user.get_full_name }}</h5>
+                            <p class="text-muted mb-3">{{ course.teacher.bio }}</p>
+                            <div class="d-flex flex-wrap gap-2">
+                                {% for language in course.teacher.languages.all %}
+                                <span class="badge bg-light text-dark border">
+                                    <i class="bi bi-check-circle me-1"></i>{{ language.name }}
+                                </span>
+                                {% endfor %}
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <div class="card mb-4">
-            <div class="card-body">
-                <h3>Преподаватель</h3>
-                <div class="d-flex align-items-center">
-                    {% if course.teacher.photo %}
-                    <img src="{{ course.teacher.photo.url }}" alt="{{ course.teacher.user.get_full_name }}"
-                         class="rounded-circle me-3" width="80" height="80">
+        <!-- Боковая панель -->
+        <div class="col-lg-4">
+            <div class="card sticky-top" style="top: 100px;">
+                <div class="card-body text-center">
+                    <h5 class="card-title mb-3">Начать обучение</h5>
+
+                    {% if user.is_authenticated %}
+                        {% if user_enrollment %}
+                            <div class="alert alert-info">
+                                <i class="bi bi-info-circle me-1"></i>
+                                Вы уже подали заявку на этот курс
+                            </div>
+                            <a href="{% url 'profile' %}" class="btn btn-outline-primary w-100">
+                                <i class="bi bi-person-circle me-1"></i>Перейти в профиль
+                            </a>
+                        {% else %}
+                            <form method="post" action="{% url 'enroll_course' course.id %}">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-success btn-lg w-100 mb-3">
+                                    <i class="bi bi-pencil-square me-2"></i>Записаться на курс
+                                </button>
+                            </form>
+                        {% endif %}
+                    {% else %}
+                        <div class="alert alert-warning">
+                            <i class="bi bi-exclamation-triangle me-1"></i>
+                            Для записи на курс необходимо авторизоваться
+                        </div>
+                        <div class="d-grid gap-2">
+                            <a href="{% url 'login' %}" class="btn btn-primary">
+                                <i class="bi bi-box-arrow-in-right me-1"></i>Войти
+                            </a>
+                            <a href="{% url 'register' %}" class="btn btn-outline-primary">
+                                <i class="bi bi-person-plus me-1"></i>Зарегистрироваться
+                            </a>
+                        </div>
                     {% endif %}
-                    <div>
-                        <h5>{{ course.teacher.user.get_full_name }}</h5>
-                        <p class="text-muted">{{ course.teacher.bio|truncatewords:30 }}</p>
+
+                    <hr class="my-4">
+
+                    <div class="text-start">
+                        <h6 class="mb-3">Информация о курсе:</h6>
+                        <div class="d-flex justify-content-between mb-2">
+                            <span>Язык:</span>
+                            <strong>{{ course.language.name }}</strong>
+                        </div>
+                        <div class="d-flex justify-content-between mb-2">
+                            <span>Уровень:</span>
+                            <strong>{{ course.level.name }}</strong>
+                        </div>
+                        <div class="d-flex justify-content-between mb-2">
+                            <span>Продолжительность:</span>
+                            <strong>{{ course.duration }}</strong>
+                        </div>
+                        <div class="d-flex justify-content-between">
+                            <span>Стоимость:</span>
+                            <strong class="h5 text-success">{{ course.price }} ₽</strong>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-
-        {% if user.is_authenticated %}
-            <form method="post" action="{% url 'enroll_course' course.id %}">
-                {% csrf_token %}
-                <button type="submit" class="btn btn-success btn-lg">Записаться на курс</button>
-            </form>
-        {% else %}
-            <div class="alert alert-info">
-                Для записи на курс необходимо
-                <a href="{% url 'login' %}" class="alert-link">войти</a> или
-                <a href="{% url 'register' %}" class="alert-link">зарегистрироваться</a>
-            </div>
-        {% endif %}
     </div>
 </div>
 {% endblock %}
