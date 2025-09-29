@@ -42,10 +42,6 @@
                                 <i class="bi bi-bar-chart me-2 text-primary"></i>
                                 <strong>Уровень:</strong> {{ course.level.name }}
                             </p>
-                            <p class="mb-0">
-                                <i class="bi bi-calendar me-2 text-primary"></i>
-                                <strong>Добавлен:</strong> {{ course.created_at|date:"d.m.Y" }}
-                            </p>
                         </div>
                     </div>
 
@@ -56,11 +52,10 @@
                 </div>
             </div>
 
-            <!-- Преподаватель -->
             <div class="card">
                 <div class="card-body">
                     <h4 class="card-title mb-4">
-                        <i class="bi bi-person-badge me-2"></i>Преподаватель
+                        <i class="bi me-2"></i>Преподаватель
                     </h4>
                     <div class="d-flex align-items-start">
                         {% if course.teacher.photo %}
@@ -88,7 +83,6 @@
             </div>
         </div>
 
-        <!-- Боковая панель -->
         <div class="col-lg-4">
             <div class="card sticky-top" style="top: 100px;">
                 <div class="card-body text-center">
