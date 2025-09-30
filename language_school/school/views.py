@@ -56,6 +56,7 @@ def register(request):
         form = UserCreationForm()
     return render(request, 'school/register.html', {'form': form})
 
+
 @login_required
 def profile(request):
     if request.method == 'POST':
@@ -69,24 +70,20 @@ def profile(request):
 
     enrollments = Enrollment.objects.filter(student=request.user)
     approved_courses = enrollments.filter(status='approved')
-    pending_enrollments = enrollments.filter(status='pending')
-    rejected_enrollments = enrollments.filter(status='rejected')
 
     course_materials = {}
     for enrollment in approved_courses:
         materials = CourseMaterial.objects.filter(course=enrollment.course)
-        course_materials[enrollment.course.id] = materials
+        if materials.exists():
+            course_materials[enrollment.course.id] = materials
 
     context = {
         'form': form,
         'enrollments': enrollments,
         'approved_courses': approved_courses,
-        'pending_enrollments': pending_enrollments,
-        'rejected_enrollments': rejected_enrollments,
         'course_materials': course_materials,
     }
     return render(request, 'school/profile.html', context)
-
 def custom_logout(request):
     logout(request)
     return redirect('home')
